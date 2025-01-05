@@ -154,8 +154,10 @@ export const authStore = defineStore(
             this.authToken = data.token;
             this.userId = data.id;
             this.isAuthed = true;
+            console.log("is authed", this.isAuthed);
             this.user.email = data.email;
             this.user.userName = data.userName;
+            console.log("name", this.user.userName);
             this.user.role = data.role;
             this.role = data.role;
             localStorage.setItem("authToken", data.token);
@@ -176,7 +178,8 @@ export const authStore = defineStore(
           }
           this.processResultStatus = false;
         } finally {
-          this.changeOnLoad(false);
+          this.onLoad = false;
+          return this.processResultStatus;
         }
       },
     },

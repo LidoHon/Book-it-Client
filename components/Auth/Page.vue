@@ -22,7 +22,9 @@ function toggleForm() {
       class="flex flex-col justify-center px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24 flex-1"
     >
       <!-- Form Toggle Button and Conditional Heading -->
-      <div class="flex flex-row gap-4 pt-6">
+      <div
+        class="flex flex-row gap-4 pt-20 sm:items-center sm:justify-center lg:items-start lg:justify-start"
+      >
         <h2 class="text-center border-b-2 border-black">
           {{
             showSignup

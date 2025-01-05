@@ -67,7 +67,7 @@ const handleFileChange = (event) => {
   <div class="flex flex-col gap-1 items-center justify-center w-full">
     <label
       for="dropzone-file"
-      class="flex flex-col items-center justify-center w-full h-25 border-2 border-gray-300 border-dashed rounded-full cursor-pointer bg-transparent dark:hover:bg-bray-800"
+      class="flex flex-col items-center justify-center w-full h-25 border-2 border-gray-300 border-dashed rounded-full cursor-pointer bg-transparent hover:bg-slate-200 hover:backdrop:brightness-90"
     >
       <div class="flex flex-col items-center justify-center pt-5 pb-6">
         <svg
@@ -86,7 +86,7 @@ const handleFileChange = (event) => {
           />
         </svg>
         <p class="mb-2 text-sm text-gray-300 dark:text-gray-400">
-          <span class="font-semibold">Click to upload</span>
+          <span class="font-semibold">Click to upload</span> or drag and drop
         </p>
         <p
           class="text-xs text-gray-500 dark:text-gray-400"
