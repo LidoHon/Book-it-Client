@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
 import SIGNUP_MUTATION from "../graphql/mutation/signup.gql";
-
+import VERIFY_USER from "../graphql/mutation/verifyEmail.gql";
 export const authStore = defineStore(
   {
     id: "auth",
@@ -106,6 +106,39 @@ export const authStore = defineStore(
       getRole() {
         if (localStorage.getItem("authRole")) {
           return localStorage.getItem("authRole");
+        }
+      },
+
+      async verifyEmail(payload) {
+        console.log("verifyEmail function called with payload:", payload);
+        const { user_id, verification_token } = payload;
+        const { $apollo } = useNuxtApp();
+
+        try {
+          this.onLoad = true;
+          const res = await $apollo.clients.default.mutate({
+            mutation: VERIFY_USER,
+            variables: {
+              user_id,
+              verification_token,
+            },
+          });
+          console.log("Mutation response from the store:", res);
+          if (res.data) {
+            const data = res.data.verifyEmail.message;
+            console.log("verification sucess:", data);
+            this.isEmailVerified = true;
+            this.successMessage = "Email verified sucessfully!";
+          } else {
+            this.errorMessage =
+              res.errors?.[0]?.message || "verification failed";
+          }
+        } catch (error) {
+          console.error("verififcation errror", error);
+          this.errorMessage =
+            error.message || "An error occuers during verification";
+        } finally {
+          this.onLoad = false;
         }
       },
 

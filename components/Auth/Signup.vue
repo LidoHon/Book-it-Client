@@ -10,10 +10,6 @@ useSeoMeta({
   description: "The booking app Meta.",
 });
 
-definePageMeta({
-  layout: "auth",
-});
-
 const useAuthStore = authStore();
 const MAX_FILE_SIZE = 2097152;
 const router = useRouter();
@@ -321,7 +317,7 @@ const handleSigningUp = async (value) => {
         </div>
       </Form>
 
-      <div class="flex items-center justify-between mt-4">
+      <!-- <div class="flex items-center justify-between mt-4">
         <span class="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
 
         <NuxtLink
@@ -331,7 +327,7 @@ const handleSigningUp = async (value) => {
         >
 
         <span class="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
