@@ -1,0 +1,45 @@
+query Profile($id: Int!) {
+  users_by_pk(id: $id) {
+    email
+    id
+    is_email_verified
+    phone
+    profile
+    role
+    updated_at
+    username
+    created_at
+    notifications(limit: 10, order_by: { created_at: asc }) {
+      is_read
+      id
+      created_at
+      message
+    }
+    RentedBooks(order_by: { rent_day: asc }) {
+      id
+      rent_day
+      return_date
+      userId
+      bookId
+      book {
+        author
+        available
+        bookImage
+        genre
+        id
+      }
+    }
+  }
+  wishlist(order_by: { created_at: asc }) {
+    bookId
+    created_at
+    id
+    updated_at
+    book {
+      author
+      available
+      genre
+      title
+    }
+  }
+}

@@ -150,7 +150,7 @@ const handleFileChange = (event) => {
       />
     </label>
     <p class="mt-2 text-sm text-red-600 dark:text-red-500" v-if="errorMessage">
-      <span class="font-medium">Oops! </span> {{ errorMessage }}
+      <span class="font-medium"> </span> {{ errorMessage }}
     </p>
     <div class="w-full mt-4 flex flex-wrap space-x-4">
       <!-- Display image previews -->

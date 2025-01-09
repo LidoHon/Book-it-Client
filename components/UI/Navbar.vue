@@ -46,7 +46,7 @@
                 </NuxtLink>
               </li>
               <li><NuxtLink to="#">Settings</NuxtLink></li>
-              <li><NuxtLink to="#">Logout</NuxtLink></li>
+              <li><button @click="handleLogout">Logout</button></li>
             </ul>
           </div>
         </div>
@@ -59,8 +59,12 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useToast } from "vue-toast-notification";
 
+const toast = useToast();
 const auth = authStore();
+const router = useRouter();
+
 const id = auth.userId;
 const isAuthenticated = computed(() => auth.isAuthed);
 console.log("the user is authenticated?", isAuthenticated);
@@ -72,4 +76,14 @@ const userInitials = computed(() => {
     .map((word) => word.charAt(0).toUpperCase())
     .join("");
 });
+
+const handleLogout = async () => {
+  const result = await auth.logout();
+  if (result) {
+    toast.success("you have logged out successfully");
+    router.push("/");
+  } else {
+    toast.error("unable to logout");
+  }
+};
 </script>

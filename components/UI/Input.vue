@@ -123,7 +123,7 @@ const handleToggleType = () => {
       </button>
     </div>
     <p class="mt-2 text-sm text-red-600" v-if="errorMessage">
-      <span class="font-medium">Oops! </span> {{ errorMessage }}
+      <span class="font-medium"> </span> {{ errorMessage }}
     </p>
   </div>
 </template>

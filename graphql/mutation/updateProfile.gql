@@ -1,0 +1,17 @@
+mutation UpdateProfile(
+  $userId: Int!
+  $userName: String!
+  $phone: String!
+  $base64string: String
+  $imageName: String
+  $imageType: String
+) {
+  updateProfile(
+    phone: $phone
+    userId: $userId
+    userName: $userName
+    image: { base64String: $base64string, name: $imageName, type: $imageType }
+  ) {
+    message
+  }
+}

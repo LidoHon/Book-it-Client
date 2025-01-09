@@ -288,9 +288,9 @@ const handleSigningUp = async (value) => {
             "
           />
         </div>
-        <div class="mt-6">
+        <div class="flex justify-center mt-4">
           <button
-            class="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
+            class="bg-cyan-200 border-2 rounded-full px-6 mb-2 py-2 hover:bg-cyan-600"
           >
             <span v-if="useAuthStore.$state.onLoad == false"> Sign Up </span>
             <div class="w-full flex items-center justify-center gap-2" v-else>
