@@ -61,48 +61,6 @@ const handleFileChange = (event) => {
   emit("image-changed", event);
 };
 
-// const handleFileChange = (event) => {
-//   const file = event.target.files[0];
-//   if (file) {
-//     if (
-//       ![
-//         "image/jpeg",
-//         "image/png",
-//         "image/gif",
-//         "image/svg+xml",
-//         "image/webp",
-//       ].includes(file.type)
-//     ) {
-//       toast.error("Invalid file type. Please upload a valid image.");
-//       return;
-//     }
-//     if (file.size > MAX_FILE_SIZE) {
-//       toast.error("File is too large. Maximum size is 2MB.");
-//       return;
-//     }
-
-//     image.value.name = file.name;
-//     image.value.type = file.type;
-
-//     const reader = new FileReader();
-//     reader.onload = () => {
-//       try {
-//         const base64String = reader.result.split(",")[1];
-//         image.value.base64String = base64String;
-//         toast.success("Image uploaded successfully!");
-//       } catch (error) {
-//         console.error("Error processing the image file:", error);
-//         toast.error("Failed to process the image. Please try again.");
-//       }
-//     };
-//     reader.readAsDataURL(file);
-//     reader.onerror = (error) => {
-//       console.error("Error reading the file:", error);
-//       toast.error("Failed to read the image file. Please try again.");
-//     };
-//   }
-//   emit("image-changed", event);
-// };
 </script>
 <template>
   <div class="flex flex-col gap-1 items-center justify-center w-full">

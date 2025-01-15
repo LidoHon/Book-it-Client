@@ -35,7 +35,7 @@ export default defineNuxtConfig({
     },
   },
   pinia: {
-    storesDirs: ['./stores/**', './custom-folder/stores/**'],
+    storesDirs: ["./stores/**", "./custom-folder/stores/**"],
   },
   apollo: {
     autoImports: true,
@@ -53,5 +53,8 @@ export default defineNuxtConfig({
         },
       },
     },
+  },
+  build: {
+    transpile: [/@nuxtjs[\\/]composition-api/],
   },
 });

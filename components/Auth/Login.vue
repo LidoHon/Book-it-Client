@@ -62,7 +62,7 @@ async function handleLogin(values) {
     if (useAuthStore.$state.isAdmin) {
       router.push("/admin/dashboard");
     } else {
-      router.push("/books");
+      router.push("/");
     }
   } else {
     const message = useAuthStore.$state.errorMessage || "Invalid credentials";

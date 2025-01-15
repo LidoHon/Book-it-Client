@@ -208,7 +208,7 @@ const handleSigningUp = async (value) => {
         <UIInput
           name="userName"
           placeholder="Insert Your Full Name"
-          label-text="User Name"
+          label="User Name"
           :error-message="
             errors.userName
               ? errors.userName
@@ -221,7 +221,7 @@ const handleSigningUp = async (value) => {
         <UIInput
           name="email"
           placeholder="Insert Your Email"
-          label-text="Email"
+          label="Email"
           :error-message="
             errors.email
               ? errors.email
@@ -234,7 +234,7 @@ const handleSigningUp = async (value) => {
         <UIInput
           name="password"
           placeholder="Insert Your Password"
-          label-text="password"
+          label="password"
           :is-required="true"
           type="password"
           :error-message="
@@ -249,7 +249,7 @@ const handleSigningUp = async (value) => {
         <UIInput
           name="passwordConfirmation"
           placeholder="Confirm Your Password"
-          label-text="Password Confirmation"
+          label="Password Confirmation"
           :is-required="true"
           type="password"
           :error-message="
@@ -263,7 +263,7 @@ const handleSigningUp = async (value) => {
         <UIInput
           name="phone"
           placeholder="Insert your phone"
-          label-text="Phonenumber"
+          label="Phonenumber"
           :is-required="true"
           type="text"
           :error-message="
@@ -316,18 +316,6 @@ const handleSigningUp = async (value) => {
           </button>
         </div>
       </Form>
-
-      <!-- <div class="flex items-center justify-between mt-4">
-        <span class="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
-
-        <NuxtLink
-          to="/auth/login"
-          class="text-xs text-gray-500 uppercase dark:text-gray-400 hover:underline"
-          >or sign in</NuxtLink
-        >
-
-        <span class="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
-      </div> -->
     </div>
   </div>
 </template>

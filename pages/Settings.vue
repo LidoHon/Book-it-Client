@@ -173,13 +173,9 @@ const toggleProfileUpdate = () => {
     <div class="flex items-center space-x-4">
       <div class="avatar online">
         <div class="w-24 rounded-full">
-          <!-- <img
+          <img
             src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
             alt="User Avatar"
-          /> -->
-          <img
-            :src="useAuthStore.$state.user.profile"
-            :alt="`${useAuthStore.$state.user.username}'s profile`"
           />
         </div>
       </div>
@@ -190,19 +186,9 @@ const toggleProfileUpdate = () => {
         <p class="text-gray-600">{{ useAuthStore.$state.user.email }}</p>
         <p class="text-gray-600">{{ useAuthStore.$state.user.phone }}</p>
         <p class="text-green-600">{{ useAuthStore.$state.user.role }}</p>
-        <!-- <img
-          :src="useAuthStore.$state.user.profile"
-          :alt="`${useAuthStore.$state.user.username}'s profile`"
-          class="w-24 h-24 rounded-full object-cover border border-gray-300"
-        /> -->
 
         <p class="">
-          Joined in:
-          <span class="text-green-600">
-            {{
-              new Date(useAuthStore.$state.user.created_at).toLocaleDateString()
-            }}</span
-          >
+          Joined in: <span class="text-green-600">{{ date }}</span>
         </p>
       </div>
       <button
@@ -318,15 +304,6 @@ const toggleProfileUpdate = () => {
         </Form>
       </div>
     </transition>
-
-    <!-- Sections -->
-    <div class="mt-8">
-      <!-- Rented Books Section -->
-      <RentedBooks />
-
-      <!-- Wishlist Section -->
-      <Wishlist />
-    </div>
   </div>
 </template>
 

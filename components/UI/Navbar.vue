@@ -1,3 +1,38 @@
+<script setup>
+import { ref, computed } from "vue";
+import { useToast } from "vue-toast-notification";
+
+const toast = useToast();
+const auth = authStore();
+const router = useRouter();
+
+onMounted(async () => {
+  await auth.getProfile();
+});
+
+const id = auth.userId;
+const isAuthenticated = computed(() => auth.isAuthed);
+console.log("the user is authenticated?", isAuthenticated);
+const user = computed(() => auth.user);
+const userInitials = computed(() => {
+  const name = user.value?.userName || "";
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase())
+    .join("");
+});
+
+const handleLogout = async () => {
+  const result = await auth.logout();
+  if (result) {
+    toast.success("you have logged out successfully");
+    router.push("/");
+  } else {
+    toast.error("unable to logout");
+  }
+};
+</script>
+
 <template>
   <div v-if="isAuthenticated">
     <div
@@ -23,26 +58,32 @@
               role="button"
               class="btn btn-ghost btn-circle avatar"
             >
-              <!-- <div class="w-10 rounded-full">
+              <div class="w-10 rounded-full">
                 <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  :src="auth.$state.user.profile"
+                  :alt="`${auth.$state.user.username}'s profile`"
                 />
-              </div> -->
-              <div
+              </div>
+              <!-- <div
                 class="w-10 rounded-full bg-gray-100 flex items-center justify-center text-lg text-black hover:bg-gray-600"
               >
                 {{ userInitials }}
-              </div>
+              </div> -->
             </div>
             <ul
               tabindex="0"
               class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
-                <NuxtLink :to="`/profile/${id}`" class="justify-between">
+                <NuxtLink :to="`/profile`" class="justify-between">
                   Profile
                   <span class="badge">New</span>
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink :to="`/`" class="justify-between">
+                  home
+                  <!-- <span class="badge">New</span> -->
                 </NuxtLink>
               </li>
               <li><NuxtLink to="#">Settings</NuxtLink></li>
@@ -56,34 +97,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, computed } from "vue";
-import { useToast } from "vue-toast-notification";
-
-const toast = useToast();
-const auth = authStore();
-const router = useRouter();
-
-const id = auth.userId;
-const isAuthenticated = computed(() => auth.isAuthed);
-console.log("the user is authenticated?", isAuthenticated);
-const user = computed(() => auth.user);
-const userInitials = computed(() => {
-  const name = user.value?.userName || "";
-  return name
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase())
-    .join("");
-});
-
-const handleLogout = async () => {
-  const result = await auth.logout();
-  if (result) {
-    toast.success("you have logged out successfully");
-    router.push("/");
-  } else {
-    toast.error("unable to logout");
-  }
-};
-</script>

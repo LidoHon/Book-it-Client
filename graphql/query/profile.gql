@@ -22,6 +22,7 @@ query Profile($id: Int!) {
       userId
       bookId
       book {
+        title
         author
         available
         bookImage
@@ -29,17 +30,15 @@ query Profile($id: Int!) {
         id
       }
     }
-  }
-  wishlist(order_by: { created_at: asc }) {
-    bookId
-    created_at
-    id
-    updated_at
-    book {
-      author
-      available
-      genre
-      title
+    wishlists(order_by: { created_at: asc }) {
+      book {
+        title
+        author
+        available
+        bookImage
+        genre
+        id
+      }
     }
   }
 }

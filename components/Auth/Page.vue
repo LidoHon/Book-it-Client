@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from "vue";
 
+// definePageMeta({
+//   layout: false,
+// });
 const showSignup = ref(false);
 
 function toggleForm() {

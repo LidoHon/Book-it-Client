@@ -9,6 +9,6 @@
     </main>
 
     <!-- Footer at the bottom -->
-    <!-- <Footer /> -->
+    <UIFooter />
   </div>
 </template>
