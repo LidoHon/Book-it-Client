@@ -126,7 +126,9 @@ const handleUpdateProfle = async (value) => {
     };
   }
   const result = await useAuthStore.updateProfile(payload);
+  useAuthStore.changeOnLoad(false);
   if (result) {
+    await useAuthStore.getProfile();
     if (
       useAuthStore.$state.successMessage &&
       useAuthStore.$state.successMessage.length > 0
@@ -137,6 +139,7 @@ const handleUpdateProfle = async (value) => {
     } else {
       toast.success("Your profile updated successfully!");
     }
+    showProfileUpdate.value = false;
   } else {
     if (
       useAuthStore.$state.errorMessage &&
@@ -155,12 +158,7 @@ const date = formatDate(useAuthStore.$state.user.created_at);
 
 // Reactive state for toggling sections
 const showProfileUpdate = ref(false);
-const rentedBooks = useAuthStore.rentedBooks;
-
-const wishlist = ref([
-  { id: 1, title: "Moby Dick", author: "Herman Melville" },
-  { id: 2, title: "Pride and Prejudice", author: "Jane Austen" },
-]);
+// const rentedBooks = useAuthStore.rentedBooks;
 
 const toggleProfileUpdate = () => {
   showProfileUpdate.value = !showProfileUpdate.value;

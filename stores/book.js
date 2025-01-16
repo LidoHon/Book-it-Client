@@ -2,6 +2,7 @@ import { acceptHMRUpdate, defineStore } from "pinia";
 import Books_QUERY from "../graphql/query/books.gql";
 import Rented_Books_QUERY from "../graphql/query/rentedBooks.gql";
 import WISHLISTED_BOOKS_QUERY from "../graphql/query/wishlistedBooks.gql";
+import INSERT_BOOK_MUTATION from "../graphql/mutation/addBook.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -105,6 +106,61 @@ export const bookStore = defineStore({
         console.log("error loading wishlisted books", error);
       } finally {
         this.isLoading = false;
+      }
+    },
+
+    async insertBook(payload) {
+      const { title, author, genre, imageName, imageType, imageString } =
+        payload;
+
+      const { $apollo } = useNuxtApp();
+
+      try {
+        this.isLoading = true;
+        let variables;
+
+        if (imageName || imageType || imageString) {
+          variables = {
+            title,
+            author,
+            genre,
+            base64String: imageString,
+            type: imageType,
+            name: imageName,
+          };
+        } else {
+          variables = {
+            title,
+            author,
+            genre,
+          };
+        }
+
+        const res = await $apollo.clients.default.mutate({
+          mutation: INSERT_BOOK_MUTATION,
+          variables,
+        });
+        console.log("inserted book", res);
+
+        if (res.data) {
+          const data = res.data.addBook;
+          console.log("the added book data", data);
+          this.book = data;
+          this.isAdded = true;
+          this.processResultStatus = true;
+        } else {
+          this.errorMessages = res.errors[0].message;
+          this.processResultStatus = false;
+        }
+      } catch (error) {
+        console.log("insert book error", error);
+        if (error.message) {
+          this.setErrorMessage(error.message);
+        }
+        this.processResultStatus = false;
+      } finally {
+        this.isLoading = false;
+        return this.processResultStatus;
       }
     },
   },

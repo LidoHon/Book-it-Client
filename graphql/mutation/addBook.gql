@@ -1,0 +1,22 @@
+mutation InsertBook(
+  $author: String!
+  $genre: String!
+  $title: String!
+  $base64String: String
+  $type: String
+  $name: String
+) {
+  addBook(
+    author: $author
+    genre: $genre
+    title: $title
+    image: { base64String: $base64String, name: $name, type: $type }
+  ) {
+    author
+    avaliable
+    bookImage
+    genre
+    id
+    title
+  }
+}
