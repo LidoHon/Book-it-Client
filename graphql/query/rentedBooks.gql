@@ -1,0 +1,8 @@
+query RentedBooks {
+  rentedBooks {
+    bookId
+    id
+    rent_day
+    userId
+  }
+}

@@ -1,0 +1,9 @@
+query WishlistedBooks {
+  wishlist {
+    bookId
+    created_at
+    id
+    updated_at
+    userId
+  }
+}
