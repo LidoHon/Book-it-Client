@@ -1,0 +1,40 @@
+query Users($limit: Int!, $offset: Int!) {
+  users(limit: $limit, offset: $offset, order_by: { created_at: asc }) {
+    email
+    created_at
+    is_email_verified
+    phone
+    id
+    profile
+    role
+    username
+    wishlists {
+      book {
+        author
+        available
+        bookImage
+        created_at
+        genre
+        title
+      }
+    }
+    RentedBooks {
+      rent_day
+      bookId
+      return_date
+      book {
+        author
+        available
+        bookImage
+        created_at
+        genre
+        title
+      }
+    }
+  }
+  users_aggregate {
+    aggregate {
+      count
+    }
+  }
+}

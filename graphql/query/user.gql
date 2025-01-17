@@ -1,0 +1,48 @@
+query getUser($id: Int!) {
+   users_by_pk(id: $id) {
+    created_at
+    email
+    id
+    is_email_verified
+    password
+    phone
+    profile
+    role
+    updated_at
+    username
+    notifications {
+      created_at
+      id
+      is_read
+      message
+    }
+    wishlists {
+      bookId
+      created_at
+      id
+      updated_at
+      book {
+        author
+        available
+        bookImage
+        created_at
+        genre
+        id
+      }
+    }
+    RentedBooks {
+      bookId
+      rent_day
+      return_date
+      id
+      book {
+        author
+        available
+        bookImage
+        created_at
+        genre
+        title
+      }
+    }
+  }
+}

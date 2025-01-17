@@ -110,8 +110,15 @@ export const bookStore = defineStore({
     },
 
     async insertBook(payload) {
-      const { title, author, genre, imageName, imageType, imageString } =
-        payload;
+      const {
+        title,
+        author,
+        genre,
+        available,
+        imageName,
+        imageType,
+        imageString,
+      } = payload;
 
       const { $apollo } = useNuxtApp();
 
@@ -122,6 +129,7 @@ export const bookStore = defineStore({
         if (imageName || imageType || imageString) {
           variables = {
             title,
+            available,
             author,
             genre,
             base64String: imageString,
@@ -131,6 +139,7 @@ export const bookStore = defineStore({
         } else {
           variables = {
             title,
+            available,
             author,
             genre,
           };
@@ -140,7 +149,7 @@ export const bookStore = defineStore({
           mutation: INSERT_BOOK_MUTATION,
           variables,
         });
-        console.log("inserted book", res);
+        console.log("inserted book datttttta:", JSON.stringify(res, null, 2));
 
         if (res.data) {
           const data = res.data.addBook;
