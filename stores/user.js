@@ -86,7 +86,7 @@ export const userStore = defineStore({
 
     async deleteUser(payload) {
       this.onload = true;
-      this / this.setSearchUser("");
+      this.setSearchUser("");
       const { $apollo } = useNuxtApp();
       try {
         const res = await $apollo.clients.default.mutate({

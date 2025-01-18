@@ -22,8 +22,10 @@ export const authStore = defineStore(
       authPages: ["AuthPage"],
       anonymousPages: ["index"],
       protectedPages: ["profile"],
-      adminPages: [""],
-      // adminPages: ["admin-dashboard, admin-addbooks, admin-users"],
+      // adminPages: [""],
+      adminPages: [
+        "admin-dashboard, admin-addbooks, admin-users , admin-books, admin-rentedbooks, admin-wishlists",
+      ],
       role: "anonymous",
       authToken: "",
       userId: "",

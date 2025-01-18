@@ -115,7 +115,8 @@ const handleInsertBook = async (value) => {
   console.log("the response from inserting book", res);
   if (res) {
     toast.success("Book added successfully");
-    router.push("/");
+    router.push("/admin/dashboard");
+    await useBookStore.getBooks();
   } else {
     if (useBookStore.$state.errorMessages) {
       const message = useBookStore.$state.errorMessages;
@@ -125,7 +126,6 @@ const handleInsertBook = async (value) => {
     }
   }
 };
-
 </script>
 <template>
   <div class="flex h-screen w-full">

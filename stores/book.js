@@ -3,6 +3,7 @@ import Books_QUERY from "../graphql/query/books.gql";
 import Rented_Books_QUERY from "../graphql/query/rentedBooks.gql";
 import WISHLISTED_BOOKS_QUERY from "../graphql/query/wishlistedBooks.gql";
 import INSERT_BOOK_MUTATION from "../graphql/mutation/addBook.gql";
+import DELETE_BOOK from "../graphql/mutation/deleteBook.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -58,6 +59,7 @@ export const bookStore = defineStore({
       this.isLoading = true;
       const q = "%" + payload + "%";
       const { $apollo } = useNuxtApp();
+      
       try {
         const res = await $apollo.clients.default.query({
           query: Books_QUERY,
@@ -172,6 +174,51 @@ export const bookStore = defineStore({
         return this.processResultStatus;
       }
     },
+
+    async deleteBook(payload) {
+      this.isLoading = true;
+      const { $apollo } = useNuxtApp();
+    
+      try {
+        console.log("Payload for deleteBook:", payload);
+    
+        const res = await $apollo.clients.default.mutate({
+          mutation: DELETE_BOOK,
+          variables: {
+            bookId: payload, 
+          },
+          refetchQueries: [
+            {
+              query: Books_QUERY,
+              variables: {
+                limit: this.limit,
+                offset: this.offset,
+              },
+            },
+          ],
+        });
+    
+        console.log("DeleteBook Mutation Response:", res);
+    
+        if (res.data && res.data.delete_books.affected_rows > 0) {
+          console.log("Deleted rows count:", res.data.delete_books.affected_rows);
+          this.successMessage = "Book deleted successfully!";
+          this.isDeleted = true;
+          this.processResultStatus = true;
+        } else {
+          this.errorMessages = "No book was deleted. Please check the book ID.";
+          this.processResultStatus = false;
+        }
+      } catch (error) {
+        console.error("Error deleting book:", error);
+        this.errorMessages = "Unable to delete the book, sorry.";
+        this.processResultStatus = false;
+      } finally {
+        this.isLoading = false;
+        return this.processResultStatus;
+      }
+    }
+    
   },
 });
 if (import.meta.hot) {
