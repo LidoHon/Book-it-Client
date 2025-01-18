@@ -1,5 +1,5 @@
-query getUser($id: Int!) {
-   users_by_pk(id: $id) {
+query getUser($userId: Int!) {
+  users_by_pk(id: $userId) {
     created_at
     email
     id
@@ -27,6 +27,7 @@ query getUser($id: Int!) {
         bookImage
         created_at
         genre
+        title
         id
       }
     }

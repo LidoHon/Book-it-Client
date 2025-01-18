@@ -88,15 +88,16 @@ onMounted(fetchUserDetails);
           <li
             v-for="wishlist in userDetails.wishlists"
             :key="wishlist.id"
-            class="border-b py-2 flex items-center gap-4"
+            class="border-b py-2 flex items-center gap-8"
           >
             <img
               :src="wishlist.book.bookImage"
               alt="Book Image"
-              class="h-12 w-12 object-cover rounded"
+              class="h-28 w-20 object-cover rounded-lg border-2 border-gray-300 shadow-xl shadow-gray-500/50 transform hover:scale-105 hover:rotate-1 transition duration-300 ease-in-out"
             />
             <div>
-              <p class="font-semibold">{{ wishlist.book.author }}</p>
+              <p class="font-semibold">{{ wishlist.book.title }}</p>
+              <p class="text-gray-500">Author :{{ wishlist.book.author }}</p>
               <p class="text-gray-500">Genre: {{ wishlist.book.genre }}</p>
               <p class="text-gray-500">
                 Added on:
@@ -120,8 +121,9 @@ onMounted(fetchUserDetails);
             <img
               :src="rentedBook.book.bookImage"
               alt="Book Image"
-              class="h-12 w-12 object-cover rounded"
+              class="h-28 w-20 object-cover rounded-lg border-2 border-gray-300 shadow-xl shadow-gray-500/50 transform hover:scale-105 hover:rotate-1 transition duration-300 ease-in-out"
             />
+
             <div>
               <p class="font-semibold">{{ rentedBook.book.title }}</p>
               <p class="text-gray-500">Author: {{ rentedBook.book.author }}</p>

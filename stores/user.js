@@ -76,6 +76,7 @@ export const userStore = defineStore({
         });
         console.log("the fetched user data", res);
         this.user = res.data.users_by_pk;
+        console.log("the fetched user dataaaa", this.user);
       } catch (error) {
         console.log("error in loading the user data", error);
       } finally {
