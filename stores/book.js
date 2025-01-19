@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from "pinia";
-import Books_QUERY from "../graphql/query/books.gql";
-import Rented_Books_QUERY from "../graphql/query/rentedBooks.gql";
+import BOOKS_QUERY from "../graphql/query/books.gql";
+import RENTED_BOOKS_QUERY from "../graphql/query/rentedBooks.gql";
 import WISHLISTED_BOOKS_QUERY from "../graphql/query/wishlistedBooks.gql";
 import INSERT_BOOK_MUTATION from "../graphql/mutation/addBook.gql";
 import DELETE_BOOK from "../graphql/mutation/deleteBook.gql";
@@ -59,10 +59,10 @@ export const bookStore = defineStore({
       this.isLoading = true;
       const q = "%" + payload + "%";
       const { $apollo } = useNuxtApp();
-      
+
       try {
         const res = await $apollo.clients.default.query({
-          query: Books_QUERY,
+          query: BOOKS_QUERY,
           variables: {
             q,
             limit: this.limit,
@@ -84,7 +84,7 @@ export const bookStore = defineStore({
 
       try {
         const res = await $apollo.clients.default.query({
-          query: Rented_Books_QUERY,
+          query: RENTED_BOOKS_QUERY,
         });
         console.log("rented books result", res);
         this.rentedBooks = res.data.rentedBooks;
@@ -178,18 +178,19 @@ export const bookStore = defineStore({
     async deleteBook(payload) {
       this.isLoading = true;
       const { $apollo } = useNuxtApp();
-    
+
       try {
         console.log("Payload for deleteBook:", payload);
-    
+
         const res = await $apollo.clients.default.mutate({
           mutation: DELETE_BOOK,
           variables: {
-            bookId: payload, 
+            bookId: payload,
           },
+          awaitRefetchQueries: true,
           refetchQueries: [
             {
-              query: Books_QUERY,
+              query: BOOKS_QUERY,
               variables: {
                 limit: this.limit,
                 offset: this.offset,
@@ -197,11 +198,14 @@ export const bookStore = defineStore({
             },
           ],
         });
-    
+
         console.log("DeleteBook Mutation Response:", res);
-    
+
         if (res.data && res.data.delete_books.affected_rows > 0) {
-          console.log("Deleted rows count:", res.data.delete_books.affected_rows);
+          console.log(
+            "Deleted rows count:",
+            res.data.delete_books.affected_rows
+          );
           this.successMessage = "Book deleted successfully!";
           this.isDeleted = true;
           this.processResultStatus = true;
@@ -217,8 +221,7 @@ export const bookStore = defineStore({
         this.isLoading = false;
         return this.processResultStatus;
       }
-    }
-    
+    },
   },
 });
 if (import.meta.hot) {

@@ -23,7 +23,7 @@ onMounted(async () => {
 
 // Function to handle delete book
 const confirmDeleteBook = (book) => {
-  console.log("Book to deleteeeee:", JSON.stringify(book, null, 2));
+  console.log("Book to delete:", JSON.stringify(book, null, 2));
   bookToDelete.value = book;
   showDeleteConfirmation.value = true;
 };
@@ -69,9 +69,6 @@ const prevPage = () => {
     currentPage.value--;
   }
 };
-
-const bookId = bookToDelete.id;
-console.log("booooookkkkkkkk id", bookId);
 </script>
 
 <template>

@@ -1,15 +1,5 @@
 query GetBooks($q: String, $limit: Int!, $offset: Int!) {
-  books(
-    order_by: { created_at: asc }
-    where: {
-      title: { _ilike: $q }
-      author: { _ilike: $q }
-      # available: { _eq: true }
-      genre: { _ilike: $q }
-    }
-    limit: $limit
-    offset: $offset
-  ) {
+  books(order_by: { created_at: asc }, limit: $limit, offset: $offset) {
     author
     available
     bookImage

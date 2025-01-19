@@ -26,7 +26,7 @@ onMounted(async () => {
 // Function to handle delete user
 const confirmDeleteUser = (user) => {
   userToDelete.value = user;
-  showDeleteConfirmation.value = true; 
+  showDeleteConfirmation.value = true;
 };
 
 // Function to delete a user
