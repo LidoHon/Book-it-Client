@@ -4,6 +4,7 @@ import RENTED_BOOKS_QUERY from "../graphql/query/rentedBooks.gql";
 import WISHLISTED_BOOKS_QUERY from "../graphql/query/wishlistedBooks.gql";
 import INSERT_BOOK_MUTATION from "../graphql/mutation/addBook.gql";
 import DELETE_BOOK from "../graphql/mutation/deleteBook.gql";
+import QUERY_BOOK from "../graphql/query/book.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -74,6 +75,28 @@ export const bookStore = defineStore({
         this.totalBooks = res.data.books_aggregate.aggregate.count;
       } catch (error) {
         console.log("error loading books", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async getBook(payload) {
+      this.isLoading = true;
+      try {
+        const { $apollo } = useNuxtApp();
+        const res = await $apollo.clients.default.query({
+          query: QUERY_BOOK,
+          variables: {
+            bookId: payload,
+          },
+        });
+        console.log(
+          "book data from get a single book",
+          JSON.stringify(res, null, 3)
+        );
+        this.book = res.data.books_by_pk;
+      } catch (error) {
+        console.log("error loading book", error);
       } finally {
         this.isLoading = false;
       }

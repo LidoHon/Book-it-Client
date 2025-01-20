@@ -1,3 +1,4 @@
+import { acceptHMRUpdate, defineStore } from "pinia";
 import USERS_QUERY from "../graphql/query/users.gql";
 import GET_USER from "../graphql/query/user.gql";
 import DELETE_USER from "../graphql/mutation/deleteUser.gql";
@@ -129,3 +130,6 @@ export const userStore = defineStore({
     },
   },
 });
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(userStore, import.meta.hot));
+}

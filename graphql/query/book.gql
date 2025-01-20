@@ -1,0 +1,23 @@
+query MyQuery($bookId: Int!) {
+  books_by_pk(id: $bookId) {
+    author
+    available
+    bookImage
+    created_at
+    genre
+    id
+    title
+    rent_book {
+      bookId
+      id
+      rent_day
+      return_date
+      userId
+      user_rent {
+        username
+        phone
+        email
+      }
+    }
+  }
+}

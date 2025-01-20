@@ -1,14 +1,15 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { bookStore } from "~/stores/book";
+import { authStore } from "~/stores/auth";
 
 const usebookStore = bookStore();
-const searchQuery = ref("");
+const useAuthStore = authStore();
 
+const searchQuery = ref("");
 const rentedBooks = computed(() => usebookStore.rentedBooks);
 const wishlistedBooks = computed(() => usebookStore.wishlistedBooks);
-console.log("rented boooooks", rentedBooks);
-const useAuthStore = authStore();
+
 const fetchBooks = async () => {
   await usebookStore.getBooks(searchQuery.value);
 };
@@ -20,123 +21,70 @@ onMounted(() => {
   usebookStore.getWishlistedBooks();
 });
 </script>
-
 <template>
-  <div>
+  <div class="p-6 bg-gray-100 min-h-screen">
     <!-- Books Section -->
-    <div class="p-4">
-      <h2 class="text-2xl font-bold mb-4">Books</h2>
-      <div v-if="usebookStore.isLoading" class="text-center text-lg">
-        Loading...
+    <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Bookshelf</h2>
+    <div v-if="usebookStore.isLoading" class="text-center text-lg">
+      Loading...
+    </div>
+    <div v-else>
+      <div v-if="usebookStore.books.length === 0" class="text-center text-lg">
+        Sorry, no books found.
       </div>
-      <div v-else>
-        <div v-if="usebookStore.books.length === 0" class="text-center text-lg">
-          sorry, No books found.
-        </div>
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-        >
-          <div
-            v-for="book in usebookStore.books"
-            :key="book.id"
-            class="card shadow-lg"
-          >
-            <figure>
-              <img
-                :src="book.bookImage || 'https://via.placeholder.com/150'"
-                alt="Book Image"
-                class="w-full h-48 object-cover"
-              />
-            </figure>
-            <div class="card-body">
-              <h3 class="card-title">{{ book.title }}</h3>
-              <p class="text-sm text-gray-500">Author: {{ book.author }}</p>
-              <p class="text-sm text-gray-500">Genre: {{ book.genre }}</p>
-              <p
-                class="text-sm"
-                :class="book.available ? 'text-green-500' : 'text-red-500'"
-              >
-                {{ book.available ? "Available" : "Not Available" }}
-              </p>
-              <div v-if="book.available" class="flex justify-between">
-                <button
-                  class="rounded-full pl-10 pr-10 pt-2 pb-2 text-center bg-red-700 text-white text-s font-bold"
-                >
-                  rent
-                </button>
-                <div>
-                  <button
-                    v-if="
-                      wishlistedBooks.some(
-                        (wishlistedBook) =>
-                          wishlistedBook.bookId === book.id &&
-                          wishlistedBook.userId === useAuthStore.user.id
-                      )
-                    "
-                    class="rounded-full pl-6 pr-6 pt-2 pb-2 text-center bg-red-600 text-white text-s font-bold"
-                  >
-                    remove from wishlist
-                  </button>
-                  <button
-                    v-else
-                    class="rounded-full pl-6 pr-6 pt-2 pb-2 text-center bg-[#748878] text-white text-s font-bold"
-                  >
-                    + Wishlist
-                  </button>
-                </div>
-              </div>
-              <div v-else class="flex justify-center">
-                <!-- Loop through rentedBooks to check if the current book is rented by the logged-in user -->
-                <div v-for="rentedBook in rentedBooks" :key="rentedBook.id">
-                  <div
-                    v-if="
-                      rentedBook.bookId === book.id &&
-                      rentedBook.userId === useAuthStore.user.id
-                    "
-                  >
-                    <!-- Show Return button if the logged-in user rented the book -->
-                    <button
-                      class="rounded-full pl-6 pr-6 pt-2 pb-2 text-center bg-red-700 text-white text-s font-bold"
-                    >
-                      Return
-                    </button>
-                  </div>
-                </div>
 
-                <!-- Show Wishlist button only if the logged-in user has not rented the book -->
-                <div
-                  v-if="
-                    !rentedBooks.some(
-                      (rentedBook) =>
-                        rentedBook.bookId === book.id &&
-                        rentedBook.userId === useAuthStore.user.id
-                    )
-                  "
-                >
-                  <button
-                    v-if="
-                      wishlistedBooks.some(
-                        (wishlistedBook) =>
-                          wishlistedBook.bookId === book.id &&
-                          wishlistedBook.userId === useAuthStore.user.id
-                      )
-                    "
-                    class="rounded-full pl-6 pr-6 pt-2 pb-2 text-center bg-red-600 text-white text-s font-bold"
-                  >
-                    Remove from Wishlist
-                  </button>
-                  <button
-                    v-else
-                    class="rounded-full pl-6 pr-6 pt-2 pb-2 text-center bg-[#748878] text-white text-s font-bold"
-                  >
-                    + Wishlist
-                  </button>
-                </div>
-              </div>
-            </div>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 relative z-10"
+      >
+        <div
+          v-for="book in usebookStore.books"
+          :key="book.id"
+          class="relative bg-white shadow-lg rounded-lg p-4 transform hover:scale-105 transition duration-300"
+        >
+          <img
+            :src="book.bookImage || 'https://via.placeholder.com/150'"
+            alt="Book Image"
+            class="w-full h-48 object-cover rounded-md shadow-md mb-4"
+          />
+          <h3 class="font-semibold text-lg text-gray-700">{{ book.title }}</h3>
+          <p class="text-sm text-gray-500">Author: {{ book.author }}</p>
+          <p class="text-sm text-gray-500">Genre: {{ book.genre }}</p>
+          <p
+            class="text-sm font-semibold mt-2"
+            :class="book.available ? 'text-green-600' : 'text-red-600'"
+          >
+            {{ book.available ? "Available" : "Not Available" }}
+          </p>
+          <div class="mt-4 flex flex-col gap-2">
+            <button
+              v-if="book.available"
+              class="w-full bg-red-700 text-white font-bold py-2 rounded-lg hover:bg-red-800"
+            >
+              Rent
+            </button>
+            <button
+              v-if="
+                wishlistedBooks.some(
+                  (wishlistedBook) =>
+                    wishlistedBook.bookId === book.id &&
+                    wishlistedBook.userId === useAuthStore.user.id
+                )
+              "
+              class="w-full bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-red-700"
+            >
+              Remove from Wishlist
+            </button>
+            <button
+              v-else
+              class="w-full bg-[#748878] text-white font-bold py-2 rounded-lg hover:bg-[#3e4b40]"
+            >
+              + Wishlist
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+

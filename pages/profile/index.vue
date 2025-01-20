@@ -166,7 +166,7 @@ const toggleProfileUpdate = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 p-6">
+  <div class="min-h-screen container mx-auto bg-gray-100 p-6">
     <!-- Header Section -->
     <div class="flex items-center space-x-4">
       <div class="avatar online">
@@ -286,7 +286,7 @@ const toggleProfileUpdate = () => {
           </div>
           <div class="mt-6">
             <button
-              class="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
+              class="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-cyan-800 rounded-full hover:bg-cyan-700 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
             >
               <span v-if="useAuthStore.$state.onLoad == false">
                 Update Profile
