@@ -5,6 +5,7 @@ import WISHLISTED_BOOKS_QUERY from "../graphql/query/wishlistedBooks.gql";
 import INSERT_BOOK_MUTATION from "../graphql/mutation/addBook.gql";
 import DELETE_BOOK from "../graphql/mutation/deleteBook.gql";
 import QUERY_BOOK from "../graphql/query/book.gql";
+import UPDATE_BOOK from "../graphql/mutation/updateBook.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -13,6 +14,7 @@ export const bookStore = defineStore({
     book: [],
     rentedBooks: [],
     wishlistedBooks: [],
+    updateBookInfo: [],
     limit: 10,
     isLoading: false,
     isRented: false,
@@ -31,6 +33,20 @@ export const bookStore = defineStore({
   actions: {
     setSearchController(payload) {
       this.searchController = payload;
+    },
+    selectBook(bookId) {
+      // Find the book by its ID in the books array
+      const selected = this.books.find((book) => book.id === bookId);
+      if (selected) {
+        this.book = selected;
+      } else {
+        console.log("Book not found");
+      }
+    },
+
+    // You can also create a method to clear the selected book
+    clearSelectedBook() {
+      this.book = [];
     },
 
     setOffset(payload) {
@@ -240,6 +256,84 @@ export const bookStore = defineStore({
         console.error("Error deleting book:", error);
         this.errorMessages = "Unable to delete the book, sorry.";
         this.processResultStatus = false;
+      } finally {
+        this.isLoading = false;
+        return this.processResultStatus;
+      }
+    },
+
+    async updateBook(payload) {
+      this.isLoading = true;
+      const {
+        book_id,
+        title,
+        author,
+        genre,
+        imageName,
+        base64String,
+        imageType,
+      } = payload;
+
+      const { $apollo } = useNuxtApp();
+      try {
+        let variables;
+        if (imageName || imageType || base64String) {
+          variables = {
+            book_id,
+            title,
+            author,
+            genre,
+            base64String,
+            imageType,
+            imageName,
+          };
+        } else {
+          variables = {
+            book_id,
+            title,
+            author,
+            genre,
+          };
+        }
+        const res = await $apollo.clients.default.mutate({
+          mutation: UPDATE_BOOK,
+          variables,
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: BOOKS_QUERY,
+              variables: {
+                q: "%%",
+                limit: this.limit,
+                offset: this.offset,
+              },
+            },
+          ],
+          onCompleted: (data) => {
+            // Access the refetched data here
+            console.log("the refetched book  data:", data);
+          },
+          onError: (error) => {
+            console.error("Error during mutation:", error);
+          },
+        });
+        console.log("the response", res);
+        if (res.data) {
+          const data = res.data;
+          this.updateBookInfo = data.updateBook;
+          this.successMessage =
+            data.updateBook.message || "book updated sucessfully!";
+          this.processResultStatus = true;
+        } else {
+          console.log("error updating the book");
+          this.errorMessages = "unable to update the book";
+          this.processResultStatus = false;
+        }
+      } catch (error) {
+        console.error(error);
+        console.log("error in updating the book:", error);
+        this.errorMessage = "Unable to edit the book";
+        this.processResult = false;
       } finally {
         this.isLoading = false;
         return this.processResultStatus;

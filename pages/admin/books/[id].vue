@@ -68,7 +68,7 @@ onMounted(fetchBookDetails);
             </span>
           </div>
           <p class="text-gray-500 mt-4">
-            <strong>Created At:</strong>
+            <strong> Added on:</strong>
             {{ new Date(bookDetails.created_at).toDateString() }}
           </p>
           <!-- Rent Information -->
@@ -79,6 +79,11 @@ onMounted(fetchBookDetails);
             "
             class="mt-6"
           >
+            <p class="text-gray-500">
+              <strong>Rented Date:</strong>
+              {{ new Date(bookDetails.rent_book.rent_day).toDateString() }}
+            </p>
+
             <h4 class="text-lg font-semibold text-gray-700">Rented By:</h4>
             <ul class="mt-2 space-y-2">
               <li

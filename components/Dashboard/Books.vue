@@ -10,7 +10,6 @@ const currentPage = ref(1);
 const itemsPerPage = 5;
 const bookToDelete = ref(null);
 const showDeleteConfirmation = ref(false);
-
 // Fetch books on mount
 onMounted(async () => {
   try {
@@ -89,6 +88,7 @@ const prevPage = () => {
               </th>
               <th class="py-3 px-6 text-left">Id</th>
               <th class="py-3 px-6 text-left">Title</th>
+              <th class="py-3 px-6 text-left">Genre</th>
               <th class="py-3 px-6 text-left">Author</th>
               <th class="py-3 px-6 text-left">Available</th>
               <th class="py-3 px-6 text-left">Added at</th>
@@ -127,6 +127,7 @@ const prevPage = () => {
                   </div>
                 </div>
               </td>
+              <td class="py-3 px-6">{{ book.genre || "N/A" }}</td>
               <td class="py-3 px-6">{{ book.author || "N/A" }}</td>
               <td class="py-3 px-6 font-bold">
                 <span
@@ -159,12 +160,14 @@ const prevPage = () => {
                   >
                     Details
                   </NuxtLink>
+
                   <NuxtLink
-                    :to="`/admin/books/${book.id}`"
+                    :to="`/admin/update/${book.id}`"
                     class="btn btn-warning btn-xs"
                   >
                     update
                   </NuxtLink>
+
                   <button
                     class="btn btn-error btn-xs"
                     @click="confirmDeleteBook(book)"

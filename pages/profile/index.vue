@@ -198,7 +198,7 @@ const toggleProfileUpdate = () => {
           Joined in:
           <span class="text-green-600">
             {{
-              new Date(useAuthStore.$state.user.created_at).toLocaleDateString()
+              new Date(useAuthStore.$state.user.created_at).toDateString()
             }}</span
           >
         </p>

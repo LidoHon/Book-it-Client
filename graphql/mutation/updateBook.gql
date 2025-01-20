@@ -1,0 +1,23 @@
+mutation UpdateBook(
+  $book_id: Int!
+  $title: String!
+  $author: String!
+  $genre: String!
+  $base64string: String
+  $imageName: String
+  $imageType: String
+) {
+  updateBook(
+    book_id: $book_id
+    title: $title
+    author: $author
+    genre: $genre
+    bookImage: {
+      base64String: $base64string
+      name: $imageName
+      type: $imageType
+    }
+  ) {
+    message
+  }
+}
