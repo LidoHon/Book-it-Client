@@ -6,6 +6,7 @@ import INSERT_BOOK_MUTATION from "../graphql/mutation/addBook.gql";
 import DELETE_BOOK from "../graphql/mutation/deleteBook.gql";
 import QUERY_BOOK from "../graphql/query/book.gql";
 import UPDATE_BOOK from "../graphql/mutation/updateBook.gql";
+import RENT_BOOK from "../graphql/mutation/rentBook.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -334,6 +335,58 @@ export const bookStore = defineStore({
         console.log("error in updating the book:", error);
         this.errorMessage = "Unable to edit the book";
         this.processResult = false;
+      } finally {
+        this.isLoading = false;
+        return this.processResultStatus;
+      }
+    },
+
+    async rentBook(payload) {
+      this.isLoading = true;
+      const { user_id, book_id } = payload;
+      const { $apollo } = useNuxtApp();
+      try {
+        const variables = { book_id, user_id };
+        console.log(
+          "RentBook variables from the storeeee:",
+          JSON.stringify(variables, null, 2)
+        );
+
+        const res = await $apollo.clients.default.mutate({
+          mutation: RENT_BOOK,
+          variables,
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: BOOKS_QUERY,
+              variables: {
+                q: "%%",
+                limit: this.limit,
+                offset: this.offset,
+              },
+            },
+          ],
+          onCompleted: (data) => {
+            console.log("bood rented completed:", data);
+          },
+          onError: (error) => {
+            console.error("Error during renting the book:", error);
+          },
+        });
+        console.log("the response of renting book mutation:", res);
+        if (res.data) {
+          const data = res.rentbook;
+          this.isRented = true;
+          this.successMessage = "book rented successfully!";
+          this.processResultStatus = true;
+        } else {
+          this.errorMessages = "unable to rent the book";
+          this.processResultStatus = false;
+        }
+      } catch (error) {
+        console.error("Error renting book:", error);
+        this.errorMessages = "unable to rent the book";
+        this.processResultStatus = false;
       } finally {
         this.isLoading = false;
         return this.processResultStatus;

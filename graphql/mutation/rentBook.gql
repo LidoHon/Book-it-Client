@@ -1,0 +1,9 @@
+
+mutation RentBook($book_id: Int!, $user_id: Int!) {
+  rentbook(book_id: $book_id, user_id: $user_id) {
+    message
+    book_id
+    rent_day
+    user_id
+  }
+}

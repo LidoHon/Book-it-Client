@@ -34,7 +34,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       // If the user is not authenticated
       if (!useAuthStore.isAnonymousPage(to.name)) {
         if (to.name !== "unauthorized") {
-          return navigateTo("/unauthorized");
+          return navigateTo("/");
         }
       }
     }

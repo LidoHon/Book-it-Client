@@ -1,7 +1,8 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { bookStore } from "~/stores/book";
-import { authStore } from "~/stores/auth";
+import { useToast } from "vue-toast-notification";
+
+const toast = useToast();
 
 const usebookStore = bookStore();
 const useAuthStore = authStore();
@@ -14,6 +15,24 @@ const fetchBooks = async () => {
   await usebookStore.getBooks(searchQuery.value);
 };
 
+const user_id = useAuthStore.user.id;
+// const bookId = usebookStore.book.id;
+const handleRent = async (book_id) => {
+  usebookStore.isLoading = true;
+  let payload;
+  payload = {
+    user_id,
+    book_id,
+  };
+  const res = await usebookStore.rentBook(payload);
+  console.log("response from renting book", res);
+  if (res) {
+    toast.success("Book rented successfully");
+    await usebookStore.getBooks();
+  } else {
+    toast.error("Something went wrong! Please try again.");
+  }
+};
 // Fetch books on component mount
 onMounted(() => {
   fetchBooks();
@@ -49,6 +68,7 @@ onMounted(() => {
           <h3 class="font-semibold text-lg text-gray-700">{{ book.title }}</h3>
           <p class="text-sm text-gray-500">Author: {{ book.author }}</p>
           <p class="text-sm text-gray-500">Genre: {{ book.genre }}</p>
+          <p class="text-sm text-gray-500">ID: {{ book.id }}</p>
           <p
             class="text-sm font-semibold mt-2"
             :class="book.available ? 'text-green-600' : 'text-red-600'"
@@ -57,10 +77,14 @@ onMounted(() => {
           </p>
           <div class="mt-4 flex flex-col gap-2">
             <button
+              @click="handleRent(book.id)"
               v-if="book.available"
               class="w-full bg-red-700 text-white font-bold py-2 rounded-lg hover:bg-red-800"
             >
-              Rent
+              <span v-if="!usebookStore.$state.isLoading"> Rent </span>
+              <div v-else class="flex items-center gap-2">
+                <UILoading />
+              </div>
             </button>
             <button
               v-if="
@@ -86,5 +110,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-

@@ -1,12 +1,8 @@
 <template>
-  <div>
-    <DahboardAdminNavbar />
-    <main class="p-6">
+  <div class="min-h-screen flex flex-col">
+    <DashboardAdminNavbar />
+    <main class="flex-grow">
       <slot />
     </main>
   </div>
 </template>
-
-<script setup>
-
-</script>
