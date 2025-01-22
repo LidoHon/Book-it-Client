@@ -7,6 +7,7 @@ import DELETE_BOOK from "../graphql/mutation/deleteBook.gql";
 import QUERY_BOOK from "../graphql/query/book.gql";
 import UPDATE_BOOK from "../graphql/mutation/updateBook.gql";
 import RENT_BOOK from "../graphql/mutation/rentBook.gql";
+import ADD_WISHLIST from "../graphql/mutation/addWishlist.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -16,7 +17,7 @@ export const bookStore = defineStore({
     rentedBooks: [],
     wishlistedBooks: [],
     updateBookInfo: [],
-    limit: 10,
+    limit: 100,
     isLoading: false,
     isRented: false,
     isWishlisted: false,
@@ -386,6 +387,58 @@ export const bookStore = defineStore({
       } catch (error) {
         console.error("Error renting book:", error);
         this.errorMessages = "unable to rent the book";
+        this.processResultStatus = false;
+      } finally {
+        this.isLoading = false;
+        return this.processResultStatus;
+      }
+    },
+
+    async addWishlist(payload) {
+      this.isLoading = true;
+
+      const { bookId, userId } = payload;
+
+      const { $apollo } = useNuxtApp();
+      try {
+        const variables = { bookId, userId };
+        console.log(
+          "wiahlist book variables from the storeeee:",
+          JSON.stringify(variables, null, 2)
+        );
+        const res = await $apollo.clients.default.mutate({
+          mutation: ADD_WISHLIST,
+          variables,
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: BOOKS_QUERY,
+              variables: {
+                q: "%%",
+                limit: this.limit,
+                offset: this.offset,
+              },
+            },
+          ],
+          onCompleted: (data) => {
+            console.log("bood wishlist completed:", data);
+          },
+          onError: (error) => {
+            console.error("Error during wishlisting the book:", error);
+          },
+        });
+        console.log("the response of wishliating book mutation:", res);
+        if (res.data) {
+          // const data = res.addWishlist;
+          this.isWishlisted = true;
+          this.successMessage = "book wishlisted successfully!";
+          this.processResultStatus = true;
+        } else {
+          this.errorMessages = "unable to wishlist the book";
+          this.processResultStatus = false;
+        }
+      } catch (error) {
+        console.error("error wishlisting a book", error);
         this.processResultStatus = false;
       } finally {
         this.isLoading = false;

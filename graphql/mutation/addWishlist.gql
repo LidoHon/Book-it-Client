@@ -1,0 +1,5 @@
+mutation AddWishlist($bookId: Int!, $userId: Int!) {
+  addWishlist(bookId: $bookId, userId: $userId) {
+    message
+  }
+}

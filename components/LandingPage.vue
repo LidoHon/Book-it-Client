@@ -33,6 +33,33 @@ const handleRent = async (book_id) => {
     toast.error("Something went wrong! Please try again.");
   }
 };
+
+const handleWishlist = async (bookId) => {
+  console.log("handleWishlist called with bookId:", bookId);
+  usebookStore.isLoading = true;
+  const payload = {
+    userId: user_id,
+    bookId,
+  };
+
+  try {
+    const response = await usebookStore.addWishlist(payload);
+    if (response) {
+      toast.success("Book added to wishlist successfully");
+      await usebookStore.getBooks();
+    } else {
+      toast.error("Something went wrong! Please try again.");
+    }
+  } catch (error) {
+    console.error("Error adding book to wishlist:", error);
+    toast.error("An error occurred. Please try again.");
+  } finally {
+    usebookStore.isLoading = false;
+  }
+};
+const handleReturn = async (book_id) => {
+  toast.success("we are working on that");
+};
 // Fetch books on component mount
 onMounted(() => {
   fetchBooks();
@@ -87,7 +114,20 @@ onMounted(() => {
               </div>
             </button>
             <button
-              v-if="
+              v-else-if="
+                rentedBooks.some(
+                  (rentedBook) =>
+                    rentedBook.bookId === book.id &&
+                    rentedBook.userId === useAuthStore.user.id
+                )
+              "
+              @click="handleReturn(book.id)"
+              class="w-full bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-red-700"
+            >
+              Return
+            </button>
+            <button
+              v-else-if="
                 wishlistedBooks.some(
                   (wishlistedBook) =>
                     wishlistedBook.bookId === book.id &&
@@ -99,10 +139,11 @@ onMounted(() => {
               Remove from Wishlist
             </button>
             <button
+              @click="handleWishlist(book.id)"
               v-else
               class="w-full bg-[#748878] text-white font-bold py-2 rounded-lg hover:bg-[#3e4b40]"
             >
-              + Wishlist
+              add to Wishlist
             </button>
           </div>
         </div>

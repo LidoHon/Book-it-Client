@@ -10,7 +10,7 @@ export const userStore = defineStore({
     errorMessage: "",
     successmessage: "",
     user: [],
-    limit: 10,
+    limit: 100,
     offset: 0,
     currentPage: 1,
     totalUsers: 0,
