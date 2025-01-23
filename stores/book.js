@@ -8,6 +8,7 @@ import QUERY_BOOK from "../graphql/query/book.gql";
 import UPDATE_BOOK from "../graphql/mutation/updateBook.gql";
 import RENT_BOOK from "../graphql/mutation/rentBook.gql";
 import ADD_WISHLIST from "../graphql/mutation/addWishlist.gql";
+import DELETE_WISHLIST from "../graphql/mutation/removeWishlist.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -394,6 +395,54 @@ export const bookStore = defineStore({
       }
     },
 
+    async removeWishlist(payload) {
+      this.isLoading = true;
+      const { $apollo } = useNuxtApp();
+      console.log("removeWishlist called with payload:", payload);
+
+      try {
+        const res = await $apollo.clients.default.mutate({
+          mutation: DELETE_WISHLIST,
+          variables: {
+            id: payload,
+          },
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: BOOKS_QUERY,
+              variables: {
+                q: "%%",
+                limit: this.limit,
+                offset: this.offset,
+              },
+            },
+          ],
+          onCompleted: (data) => {
+            console.log("bood wishlist is removed:", data);
+          },
+          onError: (error) => {
+            console.error("Error during removing the wishlisting ", error);
+          },
+        });
+        console.log("result from ustation of wishlis", res)
+        if (res.data) {
+          this.isWishlisted = false;
+          this.successMessage = "book wishlist removed successfully!";
+          this.processResultStatus = true;
+        } else {
+          this.errorMessages = "unable to remove the book from wishlist";
+          this.processResultStatus = false;
+        }
+      } catch (error) {
+        console.log("error removing the book from wishlist", error);
+        this.errorMessages = "unable to remove the book from wishlist";
+        this.processResultStatus = false;
+      } finally {
+        this.isLoading = false;
+        return this.processResultStatus;
+      }
+    },
+
     async addWishlist(payload) {
       this.isLoading = true;
 
@@ -421,7 +470,7 @@ export const bookStore = defineStore({
             },
           ],
           onCompleted: (data) => {
-            console.log("bood wishlist completed:", data);
+            console.log("book wishlist completed:", data);
           },
           onError: (error) => {
             console.error("Error during wishlisting the book:", error);

@@ -1,0 +1,5 @@
+mutation RemoveWishlist($id: Int!) {
+  delete_wishlist_by_pk(id: $id) {
+    id
+  }
+}

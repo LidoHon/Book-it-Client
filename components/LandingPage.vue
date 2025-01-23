@@ -60,6 +60,23 @@ const handleWishlist = async (bookId) => {
 const handleReturn = async (book_id) => {
   toast.success("we are working on that");
 };
+
+const handleRemoveWishlist = async (id) => {
+  console.log("handleRemoveWishlist called with bookId:", id);
+  try {
+    const response = await usebookStore.removeWishlist(id);
+    console.log("response from removing wishlist handler", response);
+    if (response) {
+      toast.success("Book removed from wishlist successfully");
+      await usebookStore.getBooks();
+    } else {
+      toast.error("Something went wrong! Please try again.");
+    }
+  } catch (error) {
+    console.error("Error removing book from wishlist:", error);
+    toast.error("An error occurred. Please try again.");
+  }
+};
 // Fetch books on component mount
 onMounted(() => {
   fetchBooks();
@@ -127,6 +144,7 @@ onMounted(() => {
               Return
             </button>
             <button
+              @click="handleRemoveWishlist(book.id)"
               v-else-if="
                 wishlistedBooks.some(
                   (wishlistedBook) =>
