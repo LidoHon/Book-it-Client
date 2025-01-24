@@ -61,10 +61,10 @@ const handleReturn = async (book_id) => {
   toast.success("we are working on that");
 };
 
-const handleRemoveWishlist = async (id) => {
-  console.log("handleRemoveWishlist called with bookId:", id);
+const handleRemoveWishlist = async (bookId) => {
+  console.log("handleRemoveWishlist called with bookId:", bookId);
   try {
-    const response = await usebookStore.removeWishlist(id);
+    const response = await usebookStore.removeWishlist(bookId);
     console.log("response from removing wishlist handler", response);
     if (response) {
       toast.success("Book removed from wishlist successfully");

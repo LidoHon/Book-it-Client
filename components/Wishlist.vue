@@ -1,17 +1,36 @@
 <script setup>
 import { computed, onMounted } from "vue";
+import { useToast } from "vue-toast-notification";
 
+const toast = useToast();
+const usebookStore = bookStore();
 const useAuthStore = authStore();
 const wishlists = computed(() => useAuthStore.wishlists);
-console.log("wishlists books", wishlists);
 
 onMounted(async () => {
   await useAuthStore.getProfile();
 });
 
-function removeFromWishlist(bookId) {
-  useAuthStore.removeFromWishlist(bookId);
-}
+const handleRemoveWishlist = async (bookId) => {
+  console.log("handleRemoveWishlist called with bookId:", bookId);
+  try {
+    const response = await usebookStore.removeWishlist(bookId);
+    console.log("response from removing wishlist handler", response);
+    if (response) {
+      toast.success("Book removed from wishlist successfully");
+
+      // Refetch the updated wishlist
+      useAuthStore.wishlists = useAuthStore.wishlists.filter(
+        (item) => item.book.id !== bookId
+      );
+    } else {
+      toast.error("Something went wrong! Please try again.");
+    }
+  } catch (error) {
+    console.error("Error removing book from wishlist:", error);
+    toast.error("An error occurred. Please try again.");
+  }
+};
 </script>
 
 <template>
@@ -37,6 +56,7 @@ function removeFromWishlist(bookId) {
               <p class="text-sm text-gray-600">
                 Author: {{ book.book.author }}
               </p>
+              <p class="text-sm text-gray-600">Id: {{ book.book.id }}</p>
               <p class="text-sm text-gray-600">Genre: {{ book.book.genre }}</p>
               <p class="text-sm text-gray-600">
                 Available: {{ book.book.available ? "Yes" : "No" }}
@@ -45,7 +65,7 @@ function removeFromWishlist(bookId) {
           </div>
           <button
             class="text-sm text-red-500 hover:underline"
-            @click="removeFromWishlist(book.bookId)"
+            @click="handleRemoveWishlist(book.book.id)"
           >
             Remove
           </button>

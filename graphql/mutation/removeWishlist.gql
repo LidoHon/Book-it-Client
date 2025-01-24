@@ -1,5 +1,5 @@
-mutation RemoveWishlist($id: Int!) {
-  delete_wishlist_by_pk(id: $id) {
-    id
+mutation RemoveWishlist($bookId: Int!) {
+  delete_wishlist(where: { bookId: { _eq: $bookId } }) {
+    affected_rows
   }
 }

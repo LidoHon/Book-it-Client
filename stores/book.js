@@ -398,13 +398,13 @@ export const bookStore = defineStore({
     async removeWishlist(payload) {
       this.isLoading = true;
       const { $apollo } = useNuxtApp();
-      console.log("removeWishlist called with payload:", payload);
+      console.log("Payload (wishlist ID) to be deleted:", payload);
 
       try {
         const res = await $apollo.clients.default.mutate({
           mutation: DELETE_WISHLIST,
           variables: {
-            id: payload,
+            bookId: payload,
           },
           awaitRefetchQueries: true,
           refetchQueries: [
@@ -417,14 +417,8 @@ export const bookStore = defineStore({
               },
             },
           ],
-          onCompleted: (data) => {
-            console.log("bood wishlist is removed:", data);
-          },
-          onError: (error) => {
-            console.error("Error during removing the wishlisting ", error);
-          },
         });
-        console.log("result from ustation of wishlis", res)
+        console.log("result from ustation of wishlis", JSON.stringify(res));
         if (res.data) {
           this.isWishlisted = false;
           this.successMessage = "book wishlist removed successfully!";
