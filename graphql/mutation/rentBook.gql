@@ -1,9 +1,31 @@
-
-mutation RentBook($book_id: Int!, $user_id: Int!) {
-  rentbook(book_id: $book_id, user_id: $user_id) {
+mutation RentBook(
+  $book_id: Int!
+  $user_id: Int!
+  $return_date: String!
+  $price: Int!
+) {
+  rentbook(
+    book_id: $book_id
+    user_id: $user_id
+    return_date: $return_date
+    price: $price
+  ) {
     message
-    book_id
+    price
     rent_day
+    return_date
     user_id
+    book_id
   }
 }
+
+# mutation MyMutation {
+#   rentbook(book_id: 72, return_date: "2025-02-10", user_id: 41, price: 12) {
+#     message
+#     price
+#     rent_day
+#     return_date
+#     user_id
+#     book_id
+#   }
+# }

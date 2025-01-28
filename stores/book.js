@@ -345,10 +345,10 @@ export const bookStore = defineStore({
 
     async rentBook(payload) {
       this.isLoading = true;
-      const { user_id, book_id } = payload;
+      const { user_id, book_id, return_date , price } = payload;
       const { $apollo } = useNuxtApp();
       try {
-        const variables = { book_id, user_id };
+        const variables = { book_id, user_id, return_date, price };
         console.log(
           "RentBook variables from the storeeee:",
           JSON.stringify(variables, null, 2)
@@ -379,7 +379,7 @@ export const bookStore = defineStore({
         if (res.data) {
           const data = res.rentbook;
           this.isRented = true;
-          this.successMessage = "book rented successfully!";
+          this.successMessage = res.data.rentbook.message || "book rented successfully!";
           this.processResultStatus = true;
         } else {
           this.errorMessages = "unable to rent the book";
