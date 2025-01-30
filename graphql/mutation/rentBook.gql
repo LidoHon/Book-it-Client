@@ -16,6 +16,8 @@ mutation RentBook(
     return_date
     user_id
     book_id
+    payment_id
+    checkout_url
   }
 }
 

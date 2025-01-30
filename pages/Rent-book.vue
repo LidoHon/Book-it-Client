@@ -1,139 +1,137 @@
 <script setup>
-import { ref } from "vue";
-import { useToast } from "vue-toast-notification";
+import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useToast } from "vue-toast-notification";
 
-const toast = useToast();
-const router = useRouter();
 const route = useRoute();
+const router = useRouter();
+const toast = useToast();
 
-const useAuthStore = authStore();
 const useBookStore = bookStore();
-const user = ref({
-  name: "John Doe", // Replace with actual user data
-  email: "johndoe@example.com",
+const useAuthStore = authStore();
+
+const book_id = route.query.bookId;
+const book = ref(null);
+const rentDate = ref(new Date().toISOString().split("T")[0]);
+const returnDate = ref("");
+const price = computed(() => {
+  if (!returnDate.value) return 0;
+  const rentDay = new Date(rentDate.value);
+  const returnDay = new Date(returnDate.value);
+  const days = Math.ceil((returnDay - rentDay) / (1000 * 60 * 60 * 24));
+  return days * 1;
 });
 
+// Fetch book details
+onMounted(async () => {
+  await useBookStore.getBook(book_id);
+  book.value = useBookStore.book;
+});
 
+// Rent the book (Confirm Rent)
+const confirmRent = async () => {
+  if (!returnDate.value) {
+    toast.error("Please select a return date");
+    return;
+  }
 
-const returnDate = ref("");
-const price = ref(0);
-
-const calculatePrice = () => {
-  const currentDate = new Date();
-  const selectedDate = new Date(returnDate.value);
-
-  const diffTime = selectedDate - currentDate;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  price.value = diffDays > 0 ? diffDays * 1 : 0; // $1 per day
+  const payload = {
+    user_id: useAuthStore.user.id,
+    book_id: parseInt(book_id),
+    rent_date: rentDate.value,
+    return_date: returnDate.value,
+    price: price.value,
+  };
+  console.log("payload from renting a book", JSON.stringify(payload, 2, null));
+  // Rent the book and store the checkout URL
+  const rentSuccess = await useBookStore.rentBook(payload);
+  if (rentSuccess) {
+    toast.success("Book rented successfully. You can now proceed to payment.");
+  } else {
+    toast.error("Failed to rent the book");
+  }
 };
 
-const handleRentBook = async () => {
-  toast.success("Book rented successfully!");
-  router.push("/dashboard"); // Redirect to the dashboard or another page
+const id = Number(useBookStore.$state.paymentId);
+console.log("the payment id in checkout", id);
+// console.log("paymentid", paymentId);
+// Redirect to Chapa payment page
+const payWithChapa = async () => {
+  const id = Number(
+    useBookStore.$state.paymentId?.id || useBookStore.$state.paymentId
+  );
+  console.log("Type of paymentId:", typeof id, id);
+  // const numericId = Number(id);
+  console.log("Final paymentId before request:", id, "Type:", typeof id);
+
+  if (!id || isNaN(id)) {
+    toast.error("Invalid payment ID!");
+    return;
+  }
+
+  if (!id) {
+    toast.error("Payment ID is missing!");
+    return;
+  }
+  console.log("Type of numeric paymentId:", typeof id, id);
+  // Fetch the checkout URL using paymentId
+  await useBookStore.getCheckOutUrl(id);
+  const checkout_url = useBookStore.$state.checkoutUrl;
+
+  console.log("Checkout URL:", checkout_url);
+
+  if (checkout_url) {
+    window.location.href = checkout_url; // Redirect user to Chapa
+  } else {
+    toast.error("Unable to fetch payment URL");
+  }
 };
 
-const initiateChapaPayment = () => {
-  const chapaPayment = new ChapaCheckout({
-    public_key: "CHAPUBK_TEST-rcKvlUgGJuAxncoaEVOR18bYtJIo5ocG", 
-    amount: price.value * 100, // Amount in cents
-    email: user.value.email,
-    currency: "ETB",
-    callback_url: "http://localhost:5000/api/rent/callback",
-    // cancel_url: "https://yourwebsite.com/payment-cancel",
-    metadata: {
-      user_id: "user_id_here", // Replace with actual user ID
-      book_title: book.value.title,
-      return_date: returnDate.value,
-    },
-  });
-
-  chapaPayment.open();
-};
-
-const cancelRent = () => {
-  router.push("/dashboard"); // Redirect to dashboard or home page
-};
+// Function to fetch Chapa checkout URL
 </script>
+
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col items-center py-8">
-    <!-- Page Header -->
-    <h1 class="text-3xl font-bold mb-6">Rent Book</h1>
+  <div class="p-6 bg-gray-100 min-h-screen">
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Rent Book</h2>
 
-    <!-- Book and User Info Card -->
-    <div class="bg-white shadow-md rounded-lg p-6 w-3/4">
-      <div class="flex justify-between items-center mb-4">
-        <!-- User Info -->
-        <div>
-          <h2 class="text-xl font-semibold">User Information</h2>
-          <p><strong>Name:</strong> {{ user.name }}</p>
-          <p><strong>Email:</strong> {{ user.email }}</p>
-        </div>
+    <div v-if="!book" class="text-center">Loading...</div>
+    <div v-else class="bg-white shadow-lg rounded-lg p-6">
+      <img
+        :src="book.bookImage"
+        alt="Book Image"
+        class="w-full h-64 object-cover rounded-md mb-4"
+      />
+      <h3 class="text-xl font-semibold">{{ book.title }}</h3>
+      <p class="text-gray-600">Author: {{ book.author }}</p>
+      <p class="text-gray-600">Genre: {{ book.genre }}</p>
 
-        <!-- Book Info -->
-        <div>
-          <h2 class="text-xl font-semibold">Book Information</h2>
-          <p><strong>Title:</strong> {{ book.title }}</p>
-          <p><strong>Author:</strong> {{ book.author }}</p>
-        </div>
-      </div>
-
-      <!-- Return Date and Price -->
       <div class="mt-4">
-        <label
-          for="returnDate"
-          class="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Select Return Date
-        </label>
+        <label class="block font-semibold">Return Date:</label>
         <input
-          type="date"
-          id="returnDate"
           v-model="returnDate"
+          type="date"
           class="border p-2 rounded w-full"
-          @change="calculatePrice"
         />
-
-        <div class="mt-4">
-          <p class="text-lg">
-            <strong>Price:</strong>
-            <span class="text-green-600">{{
-              price > 0 ? `$${price}` : "Select a valid return date"
-            }}</span>
-          </p>
-        </div>
       </div>
-    </div>
 
-    <!-- Messages and Actions -->
-    <div class="bg-white shadow-md rounded-lg p-6 w-3/4 mt-6">
-      <p class="text-center text-lg mb-4">
-        Enjoy your book! Remember to return it on time to avoid additional
-        charges.
-      </p>
-      <div class="flex justify-center space-x-4">
-        <button
-          class="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-          @click="cancelRent"
-        >
-          Cancel
-        </button>
-        <button
-          class="bg-blue-600 text-white px-4 py-2 rounded"
-          :disabled="price <= 0"
-          @click="handleRentBook"
-        >
-          Rent Book
-        </button>
-        <button
-          v-if="price > 0"
-          class="bg-green-600 text-white px-4 py-2 rounded"
-          @click="initiateChapaPayment"
-        >
-          Pay with Chapa
-        </button>
-      </div>
+      <p class="mt-2 text-lg font-semibold">Total Price: {{ price }} Birr</p>
+
+      <!-- Confirm Rent Button -->
+      <button
+        @click="confirmRent"
+        class="mt-4 w-full bg-green-600 text-white font-bold py-2 rounded-lg hover:bg-green-700"
+      >
+        Confirm Rent
+      </button>
+
+      <!-- Pay with Chapa Button (only visible after confirming rent) -->
+      <button
+        v-if="book"
+        @click="payWithChapa"
+        class="mt-4 w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700"
+      >
+        Pay with Chapa
+      </button>
     </div>
   </div>
 </template>

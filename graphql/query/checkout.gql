@@ -1,0 +1,5 @@
+query FetchCheckouUrl($id: Int!) {
+  payments(where: { id: { _eq: $id } }) {
+    checkout_url
+  }
+}

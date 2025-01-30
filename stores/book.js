@@ -9,6 +9,7 @@ import UPDATE_BOOK from "../graphql/mutation/updateBook.gql";
 import RENT_BOOK from "../graphql/mutation/rentBook.gql";
 import ADD_WISHLIST from "../graphql/mutation/addWishlist.gql";
 import DELETE_WISHLIST from "../graphql/mutation/removeWishlist.gql";
+import CHECKOUT_URL from "../graphql/query/checkout.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -32,6 +33,8 @@ export const bookStore = defineStore({
     currentPage: 1,
     totalBooks: 0,
     searchController: "%%",
+    checkoutUrl: "",
+    paymentId: "",
   }),
   actions: {
     setSearchController(payload) {
@@ -110,7 +113,7 @@ export const bookStore = defineStore({
           },
         });
         console.log(
-          "book data from get a single book",
+          "book data from get a single book store bookbjsdnjsd",
           JSON.stringify(res, null, 3)
         );
         this.book = res.data.books_by_pk;
@@ -345,7 +348,7 @@ export const bookStore = defineStore({
 
     async rentBook(payload) {
       this.isLoading = true;
-      const { user_id, book_id, return_date , price } = payload;
+      const { user_id, book_id, return_date, price } = payload;
       const { $apollo } = useNuxtApp();
       try {
         const variables = { book_id, user_id, return_date, price };
@@ -375,11 +378,21 @@ export const bookStore = defineStore({
             console.error("Error during renting the book:", error);
           },
         });
-        console.log("the response of renting book mutation:", res);
+        console.log(
+          "the response of renting book mutation:",
+          JSON.stringify(res, null, 2)
+        );
         if (res.data) {
-          const data = res.rentbook;
+          const data = res.data.rentbook;
           this.isRented = true;
-          this.successMessage = res.data.rentbook.message || "book rented successfully!";
+          console.log(
+            "data from rent bookkhgdddd:",
+            JSON.stringify(data, null, 2)
+          );
+          this.paymentId = data.payment_id;
+          console.log("the payment id that i wannna see",this.paymentId);
+          this.successMessage =
+            res.data.rentbook.message || "book rented successfully!";
           this.processResultStatus = true;
         } else {
           this.errorMessages = "unable to rent the book";
@@ -486,6 +499,24 @@ export const bookStore = defineStore({
       } finally {
         this.isLoading = false;
         return this.processResultStatus;
+      }
+    },
+    async getCheckOutUrl(payload) {
+      this.isLoading = true;
+      const { $apollo } = useNuxtApp();
+      try {
+        const res = await $apollo.clients.default.query({
+          query: CHECKOUT_URL,
+          variables: {
+            id: payload,
+          },
+        });
+        this.checkoutUrl = res.data.payments[0].checkout_url;
+        console.log("checkout url", res);
+      } catch (error) {
+        console.error("error fetching checkout url", error);
+      } finally {
+        this.isLoading = false;
       }
     },
   },

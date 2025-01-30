@@ -120,7 +120,7 @@ onMounted(() => {
             {{ book.available ? "Available" : "Not Available" }}
           </p>
           <div class="mt-4 flex flex-col gap-2">
-            <button
+            <!-- <button
               @click="handleRent(book.id)"
               v-if="book.available"
               class="w-full bg-red-700 text-white font-bold py-2 rounded-lg hover:bg-red-800"
@@ -129,7 +129,14 @@ onMounted(() => {
               <div v-else class="flex items-center gap-2">
                 <UILoading />
               </div>
-            </button>
+            </button> -->
+            <NuxtLink
+              :to="`/rent-book?bookId=${book.id}`"
+              v-if="book.available"
+              class="w-full bg-red-700 text-white font-bold py-2 rounded-lg hover:bg-red-800 flex justify-center items-center"
+            >
+              <span>Rent</span>
+            </NuxtLink>
             <button
               v-else-if="
                 rentedBooks.some(
