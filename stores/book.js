@@ -10,6 +10,7 @@ import RENT_BOOK from "../graphql/mutation/rentBook.gql";
 import ADD_WISHLIST from "../graphql/mutation/addWishlist.gql";
 import DELETE_WISHLIST from "../graphql/mutation/removeWishlist.gql";
 import CHECKOUT_URL from "../graphql/query/checkout.gql";
+import VERIFY_PAYMENT from "../graphql/mutation/verifyPayment.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -35,6 +36,7 @@ export const bookStore = defineStore({
     searchController: "%%",
     checkoutUrl: "",
     paymentId: "",
+    isPaymentVerified: false,
   }),
   actions: {
     setSearchController(payload) {
@@ -390,7 +392,7 @@ export const bookStore = defineStore({
             JSON.stringify(data, null, 2)
           );
           this.paymentId = data.payment_id;
-          console.log("the payment id that i wannna see",this.paymentId);
+          console.log("the payment id that i wannna see", this.paymentId);
           this.successMessage =
             res.data.rentbook.message || "book rented successfully!";
           this.processResultStatus = true;
@@ -405,6 +407,27 @@ export const bookStore = defineStore({
       } finally {
         this.isLoading = false;
         return this.processResultStatus;
+      }
+    },
+
+    async verifyPayment(payload) {
+      this.isLoading = true;
+      const { $apollo } = useNuxtApp();
+      const { id, tx_ref } = payload;
+
+      try {
+        const res = await $apollo.clients.default.mutate({
+          mutation: VERIFY_PAYMENT,
+          variables: {
+            id,
+            tx_ref,
+          },
+        });
+        console.log(res);
+      } catch (error) {
+        console.error("Error verifying payment", error);
+      } finally {
+        this.isLoading = false;
       }
     },
 

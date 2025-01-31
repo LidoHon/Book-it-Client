@@ -18,6 +18,18 @@ query MyQuery($bookId: Int!) {
         phone
         email
       }
+      payments {
+        amount
+        payment_method
+        status
+        tx_ref
+        updated_at
+        user_id
+        id
+        currency
+        created_at
+        rent_id
+      }
     }
   }
 }

@@ -2,6 +2,8 @@
 import { useToast } from "vue-toast-notification";
 import { ref, onMounted } from "vue";
 
+import { useRoute } from "vue-router";
+
 const route = useRoute();
 const toast = useToast();
 const bookId = route.params.id;
@@ -9,6 +11,7 @@ const bookId = route.params.id;
 const useBookStore = bookStore();
 const isLoading = ref(false);
 const bookDetails = ref(null);
+const isVerifying = ref(false);
 
 const fetchBookDetails = async () => {
   isLoading.value = true;
@@ -16,7 +19,7 @@ const fetchBookDetails = async () => {
   try {
     await useBookStore.getBook(bookId);
     bookDetails.value = useBookStore.book;
-    console.log("book details", bookDetails.value);
+    console.log("book details", JSON.stringify(bookDetails.value, null, 2));
   } catch (error) {
     toast.error("Failed to load book details");
     console.error(error);
@@ -24,6 +27,61 @@ const fetchBookDetails = async () => {
     isLoading.value = false;
   }
 };
+
+// Function to verify payment
+// const verifyPayment = async (payment) => {
+//   isVerifying.value = true;
+//   try {
+//     const response = await axios.put("http://localhost:5000/api/rent/payment", {
+//       tx_ref: payment.tx_ref,
+//       id: payment.id,
+//     });
+
+//     if (response.data.success) {
+//       toast.success("Payment verified successfully!");
+//       fetchBookDetails(); // Refresh book details after successful verification
+//     } else {
+//       toast.error("Failed to verify payment");
+//     }
+//   } catch (error) {
+//     toast.error("Error verifying payment");
+//     console.error(error);
+//   } finally {
+//     isVerifying.value = false;
+//   }
+// };
+
+const handleVerifyPayment = async (payment) => {
+  if (!payment.id || !payment.tx_ref) {
+    toast.error("Invalid payment details. Please try again.");
+    console.error("Missing payment details:", payment);
+    return;
+  }
+
+  isVerifying.value = true;
+  try {
+    console.log("Verifying payment with ID:", payment.id, "and tx_ref:", payment.tx_ref);
+
+    const response = await useBookStore.verifyPayment({
+      id: payment.id,
+      tx_ref: payment.tx_ref,
+    });
+
+    if (response) {
+      toast.success("Payment verified successfully!");
+      fetchBookDetails(); 
+    } else {
+      toast.error("Failed to verify payment");
+    }
+  } catch (error) {
+    toast.error("Error verifying payment");
+    console.error("Error verifying payment:", error);
+  } finally {
+    isVerifying.value = false;
+  }
+};
+
+
 
 onMounted(fetchBookDetails);
 </script>
@@ -45,7 +103,7 @@ onMounted(fetchBookDetails);
         <img
           :src="bookDetails.bookImage || 'https://via.placeholder.com/150'"
           :alt="bookDetails.title"
-          class="w-full md:w-48 h-auto object-cover rounded-lg border-2 border-gray-300 shadow-md shadow-gray-200 transform hover:scale-105 transition-transform duration-300"
+          class="w-full md:w-1/3 h-auto object-cover rounded-lg border-2 border-gray-300 shadow-md shadow-gray-200 transform hover:scale-105 transition-transform duration-300"
         />
         <!-- Book Information -->
         <div class="flex-grow">
@@ -100,6 +158,44 @@ onMounted(fetchBookDetails);
                 <p class="text-gray-600">
                   <strong>Email:</strong> {{ user.email }}
                 </p>
+              </li>
+            </ul>
+            <h4 class="text-lg font-semibold text-gray-700">Payment details</h4>
+            <ul class="mt-2 space-y-2">
+              <li
+                v-for="payment in bookDetails.rent_book.payments"
+                :key="payment.id"
+                class="bg-gray-50 border border-gray-200 rounded-lg p-4"
+              >
+                <p class="text-gray-600">
+                  <strong>Payment status:</strong> {{ payment.status }}
+                </p>
+                <p class="text-gray-600">
+                  <strong>Payment date:</strong>
+                  {{ new Date(payment.created_at).toDateString() }}
+                </p>
+                <p class="text-gray-600">
+                  <strong>Amount:</strong> {{ payment.amount }} Birr
+                </p>
+                <p class="text-gray-600">
+                  <strong>TransactionId:</strong> {{ payment.tx_ref }}
+                </p>
+                <p class="text-gray-600">
+                  <strong>Currency:</strong> {{ payment.currency }}
+                </p>
+                <p class="text-gray-600">
+                  <strong>Payment Id:</strong> {{ payment.id }}
+                </p>
+
+                <!-- Verify Payment Button -->
+                <button
+                  v-if="payment.status === 'pending'"
+                  @click="handleVerifyPayment(payment)"
+                  class="mt-4 bg-cyan-500 hover:bg-cyab-600 text-white font-bold py-1 px-3 rounded-full transition"
+                  :disabled="isVerifying"
+                >
+                  {{ isVerifying ? "Verifying..." : "Verify Payment" }}
+                </button>
               </li>
             </ul>
           </div>
