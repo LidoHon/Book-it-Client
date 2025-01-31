@@ -1,5 +1,5 @@
 mutation VerifyPayment($id: Int!, $tx_ref: String!) {
-  verifyPayment(id: $id, tx_ref: $tx_ref) {
+  ProcessPayment(id: $id, tx_ref: $tx_ref) {
     message
     status
   }

@@ -424,6 +424,8 @@ export const bookStore = defineStore({
           },
         });
         console.log(res);
+        this.successMessage = res.data.ProcessPayment.message;
+        return res.data.ProcessPayment;
       } catch (error) {
         console.error("Error verifying payment", error);
       } finally {

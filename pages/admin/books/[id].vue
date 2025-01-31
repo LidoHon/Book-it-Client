@@ -28,28 +28,6 @@ const fetchBookDetails = async () => {
   }
 };
 
-// Function to verify payment
-// const verifyPayment = async (payment) => {
-//   isVerifying.value = true;
-//   try {
-//     const response = await axios.put("http://localhost:5000/api/rent/payment", {
-//       tx_ref: payment.tx_ref,
-//       id: payment.id,
-//     });
-
-//     if (response.data.success) {
-//       toast.success("Payment verified successfully!");
-//       fetchBookDetails(); // Refresh book details after successful verification
-//     } else {
-//       toast.error("Failed to verify payment");
-//     }
-//   } catch (error) {
-//     toast.error("Error verifying payment");
-//     console.error(error);
-//   } finally {
-//     isVerifying.value = false;
-//   }
-// };
 
 const handleVerifyPayment = async (payment) => {
   if (!payment.id || !payment.tx_ref) {
@@ -66,6 +44,9 @@ const handleVerifyPayment = async (payment) => {
       id: payment.id,
       tx_ref: payment.tx_ref,
     });
+    console.log("Response from verifying payment:", response);
+    console.log("useBookStore.verifyPayment:", useBookStore.verifyPayment);
+
 
     if (response) {
       toast.success("Payment verified successfully!");
