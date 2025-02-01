@@ -17,22 +17,6 @@ const fetchBooks = async () => {
 
 const user_id = useAuthStore.user.id;
 // const bookId = usebookStore.book.id;
-const handleRent = async (book_id) => {
-  usebookStore.isLoading = true;
-  let payload;
-  payload = {
-    user_id,
-    book_id,
-  };
-  const res = await usebookStore.rentBook(payload);
-  console.log("response from renting book", res);
-  if (res) {
-    toast.success("Book rented successfully");
-    await usebookStore.getBooks();
-  } else {
-    toast.error("Something went wrong! Please try again.");
-  }
-};
 
 const handleWishlist = async (bookId) => {
   console.log("handleWishlist called with bookId:", bookId);
@@ -57,8 +41,20 @@ const handleWishlist = async (bookId) => {
     usebookStore.isLoading = false;
   }
 };
-const handleReturn = async (book_id) => {
-  toast.success("we are working on that");
+const handleReturn = async (bookId) => {
+  console.log("handleReturn called with bookId:", bookId);
+  try {
+    const res = await usebookStore.returnBook(bookId);
+    if (res) {
+      toast.success("Book returned successfully");
+      await usebookStore.getBooks();
+    } else {
+      toast.error("Something went wrong! Please try again.");
+    }
+  } catch (error) {
+    console.error("Error returning book:", error);
+    toast.error("An error occurred. Please try again.");
+  }
 };
 
 const handleRemoveWishlist = async (bookId) => {
@@ -120,16 +116,6 @@ onMounted(() => {
             {{ book.available ? "Available" : "Not Available" }}
           </p>
           <div class="mt-4 flex flex-col gap-2">
-            <!-- <button
-              @click="handleRent(book.id)"
-              v-if="book.available"
-              class="w-full bg-red-700 text-white font-bold py-2 rounded-lg hover:bg-red-800"
-            >
-              <span v-if="!usebookStore.$state.isLoading"> Rent </span>
-              <div v-else class="flex items-center gap-2">
-                <UILoading />
-              </div>
-            </button> -->
             <NuxtLink
               :to="`/rent-book?bookId=${book.id}`"
               v-if="book.available"

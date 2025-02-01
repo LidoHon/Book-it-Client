@@ -11,6 +11,7 @@ import ADD_WISHLIST from "../graphql/mutation/addWishlist.gql";
 import DELETE_WISHLIST from "../graphql/mutation/removeWishlist.gql";
 import CHECKOUT_URL from "../graphql/query/checkout.gql";
 import VERIFY_PAYMENT from "../graphql/mutation/verifyPayment.gql";
+import RETURN_BOOK from "../graphql/mutation/returnbook.gql";
 export const bookStore = defineStore({
   id: "books",
 
@@ -542,6 +543,45 @@ export const bookStore = defineStore({
         console.error("error fetching checkout url", error);
       } finally {
         this.isLoading = false;
+      }
+    },
+    async returnBook(payload) {
+      this.isLoading = true;
+      const { $apollo } = useNuxtApp();
+      try {
+        const res = await $apollo.clients.default.mutate({
+          mutation: RETURN_BOOK,
+          variables: {
+            bookId: payload,
+          },
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: BOOKS_QUERY,
+              variables: {
+                q: "%%",
+                limit: this.limit,
+                offset: this.offset,
+              },
+            },
+          ],
+        });
+        console.log("return book result", JSON.stringify(res, null, 2));
+        if (res.data) {
+          this.successMessage =
+            res.data.returnBook.message || "book returned successfully!";
+          this.processResultStatus = true;
+        } else {
+          this.errorMessages = "unable to return the book";
+          this.processResultStatus = false;
+        }
+      } catch (error) {
+        console.error("error returning book", error);
+        this.errorMessages = "unable to return the book";
+        this.processResultStatus = false;
+      } finally {
+        this.isLoading = false;
+        return this.processResultStatus;
       }
     },
   },

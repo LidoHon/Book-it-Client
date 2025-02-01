@@ -1,16 +1,30 @@
 <script setup>
 import { computed, onMounted } from "vue";
-
+import { useToast } from "vue-toast-notification";
 const useAuthStore = authStore();
 const rentedBooks = computed(() => useAuthStore.rentedBooks);
-
+const toast = useToast();
 onMounted(async () => {
   await useAuthStore.getProfile();
 });
 
-function returnBook(bookId) {
-  useAuthStore.returnBook(bookId);
-}
+const usebookStore = bookStore();
+
+const handleReturn = async (bookId) => {
+  console.log("handleReturn called with bookId:", bookId);
+  try {
+    const res = await usebookStore.returnBook(bookId);
+    if (res) {
+      toast.success("Book returned successfully");
+      await usebookStore.getBooks();
+    } else {
+      toast.error("Something went wrong! Please try again.");
+    }
+  } catch (error) {
+    console.error("Error returning book:", error);
+    toast.error("An error occurred. Please try again.");
+  }
+};
 </script>
 
 <template>
@@ -47,7 +61,7 @@ function returnBook(bookId) {
           </div>
           <button
             class="text-sm text-red-500 hover:underline"
-            @click="returnBook(book.id)"
+            @click="handleReturn(book.id)"
           >
             Return
           </button>
