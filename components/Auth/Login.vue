@@ -80,6 +80,8 @@ function toggleForm() {
   <div
     class="w-full border-2 border-cyan-100 shadow-lg rounded-lg items-center justify-center px-2 sm:px-6 lg:flex-none lg:px-4 xl:px-6"
   >
+    <UIGoogle action="sign in" />
+    <h1 class="text-2xl font-bold text-gray-700 mb-4 text-center pt-2">or</h1>
     <Form
       class="pt-5 space-y-6"
       @submit="handleLogin"

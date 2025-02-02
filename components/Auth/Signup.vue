@@ -176,7 +176,6 @@ const handleSigningUp = async (value) => {
     };
   }
   const result = await useAuthStore.signupUser(payload);
-  console.log("the result i wanna see", result);
   if (result) {
     toast.success(
       "Welcome to bookit, check your email to verify your account!"
@@ -199,6 +198,8 @@ const handleSigningUp = async (value) => {
     class="w-full border-2 border-cyan-100 shadow-lg rounded-lg items-center justify-center px-2 sm:px-6 lg:flex-none lg:px-4 xl:px-6"
   >
     <div class="w-full pt-20 px-6 py-8 md:px-8">
+      <UIGoogle action="sign up"/>
+      <h1 class="text-2xl font-bold text-gray-700 mb-4 text-center" >or</h1>
       <Form
         @submit="handleSigningUp"
         :validation-schema="schema"
