@@ -1,5 +1,11 @@
 <script setup>
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const isLoading = ref(false);
+const useAuthStore = authStore();
+
 const props = defineProps({
   action: {
     type: String,
@@ -7,13 +13,62 @@ const props = defineProps({
     validator: (value) => ["Sign in", "Sign up"].includes(value),
   },
 });
+
 const handleClick = () => {
-  isLoading.value = !isLoading.value;
+  isLoading.value = true;
   window.open(
     `${import.meta.env.VITE_GO_SERVER_ENDPOINT}/auth/google?provider=google`,
     "_self"
   );
 };
+
+// Extract token from URL and store it
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  console.log("url params", urlParams);
+  const dataParam = urlParams.get("data");
+  console.log("data params", dataParam);
+
+  if (dataParam) {
+    try {
+      const parsedData = JSON.parse(decodeURIComponent(dataParam));
+      const { token, refreshToken, role, id, message } = parsedData;
+
+      if (token) {
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("authRole", role);
+        localStorage.setItem("authUserId", id);
+
+        if (role === "admin") {
+          localStorage.setItem("isAdmin", "true");
+        }
+
+        // store it in pinia
+        useAuthStore.setUserId(id);
+        useAuthStore.$state.userId = id;
+        useAuthStore.$state.authToken = token;
+        useAuthStore.$state.refreshToken = refreshToken;
+        useAuthStore.$state.authRole = role;
+        useAuthStore.$state.isAuthed = true;
+        useAuthStore.$state.isEmailVerified = true;
+        useAuthStore.$state.successMessage =
+          message || "You have logged in successfully through google!";
+        console.log(
+          "user idddddddddddddddddddddddd",
+          useAuthStore.$state.userId
+        );
+        if (role === "admin") {
+          useAuthStore.isAdmin = true;
+        }
+
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Failed to parse auth data:", error);
+    }
+  }
+});
 </script>
 
 <template>
@@ -22,7 +77,7 @@ const handleClick = () => {
     :disabled="isLoading"
     class="w-full flex items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-full hover:bg-cyan-200 hover:ring-blue-500 hover:border-blue-500"
   >
-    <div class="w-full relative flex" v-if="isLoading == false">
+    <div class="w-full relative flex" v-if="!isLoading">
       <div class="px-2 py-3">
         <svg class="w-6 h-6" viewBox="0 0 40 40">
           <path
